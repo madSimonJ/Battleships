@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BattleShips.BusinessLogic\BattleShips.BusinessLogic.csproj" />
     <ProjectReference Include="..\Battleships.Domain\Battleships.Domain.csproj" />
     <ProjectReference Include="..\BattleShips\BattleShips.ConsoleApp.csproj" />
   </ItemGroup>

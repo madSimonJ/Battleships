@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Battleships.Domain;
 
-namespace Battleships.Domain
+namespace BattleShips.BusinessLogic
 {
     public static class GameFactory
     {
