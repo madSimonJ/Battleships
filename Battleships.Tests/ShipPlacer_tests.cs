@@ -105,9 +105,19 @@ namespace ShipPlacer_Tests__
         public class when_placing_a_ship_of_length_four_diagonally_down_and_right
         {
             private readonly GameBoard board;
+	        private char maxXCoord;
+	        private char maxYCoord;
             public when_placing_a_ship_of_length_four_diagonally_down_and_right()
             {
-                var shipPlacer = new ShipPlacer((x, y) => 'a', (x, y) => '1');
+                var shipPlacer = new ShipPlacer((min, max) =>
+                {
+	                maxXCoord = max;
+	                return 'a';
+                }, (min, max) =>
+                {
+	                maxYCoord = max;
+	                return '1';
+                });
 
                 board = shipPlacer.PlaceDiagonallyDownAndRightShipOfLength(new GameBoard(), 4);
             }
@@ -135,14 +145,87 @@ namespace ShipPlacer_Tests__
                 squares[2].Y.Should().Be((char)(squares[0].Y + 2));
                 squares[3].Y.Should().Be((char)(squares[0].Y + 3));
             }
+
+	        [Fact]
+	        public void then_the_last_three_columns_should_not_be_selected()
+	        {
+		        maxXCoord.Should().Be('g');
+	        }
+
+	        [Fact]
+	        public void then_the_last_three_Rows_should_not_be_selected()
+	        {
+		        maxYCoord.Should().Be('6');
+	        }
+
+
         }
 
-        namespace and_a_ship_is_to_be_placed_at_the_end_of_a_row
+		public class when_placing_a_ship_of_length_four_diagonally_down_and_left
+		{
+			private readonly GameBoard board;
+			private char minXCoord;
+			private char maxYCoord;
+			public when_placing_a_ship_of_length_four_diagonally_down_and_left()
+			{
+				var shipPlacer = new ShipPlacer((min, max) =>
+				{
+					minXCoord = min;
+					return 'j';
+				}, (min, max) =>
+				{
+					maxYCoord = max;
+					return '1';
+				});
+
+				board = shipPlacer.PlaceDiagonallyDownAndLeftShipOfLength(new GameBoard(), 4);
+			}
+
+			[Fact]
+			public void then_a_ship_of_length_four_is_added_to_the_board()
+			{
+				board.Armada.First().Squares.Should().HaveCount(4);
+			}
+
+			[Fact]
+			public void then_the_x_coords_of_the_ship_should_increase_by_one_each_time()
+			{
+				var squares = board.Armada.First().Squares.ToArray();
+				squares[1].X.Should().Be((char)(squares[0].X - 1));
+				squares[2].X.Should().Be((char)(squares[0].X - 2));
+				squares[3].X.Should().Be((char)(squares[0].X - 3));
+			}
+
+			[Fact]
+			public void then_the_y_coords_of_the_ship_should_increase_by_one_each_time()
+			{
+				var squares = board.Armada.First().Squares.ToArray();
+				squares[1].Y.Should().Be((char)(squares[0].Y + 1));
+				squares[2].Y.Should().Be((char)(squares[0].Y + 2));
+				squares[3].Y.Should().Be((char)(squares[0].Y + 3));
+			}
+
+			[Fact]
+			public void then_the_first_three_columns_should_not_be_selected()
+			{
+				minXCoord.Should().Be('d');
+			}
+
+			[Fact]
+			public void then_the_last_three_Rows_should_not_be_selected()
+			{
+				maxYCoord.Should().Be('6');
+			}
+
+
+		}
+
+		namespace and_a_ship_is_to_be_placed_at_the_end_of_a_row
         {
-            public class when_placing_a_ship_of_length_four
-            {
+            public class when_placing_a_ship_horizontally
+			{
                 private readonly GameBoard board;
-                public when_placing_a_ship_of_length_four()
+                public when_placing_a_ship_horizontally()
                 {
                     var shipPlacer = new ShipPlacer((x, y) => 'g', (x, y) => '1');
 
@@ -159,10 +242,10 @@ namespace ShipPlacer_Tests__
 
         namespace and_a_ship_is_to_be_placed_at_the_end_of_a_column
         {
-            public class when_placing_a_ship_of_length_four
-            {
+            public class when_placing_a_ship_vertically
+			{
                 private readonly GameBoard board;
-                public when_placing_a_ship_of_length_four()
+                public when_placing_a_ship_vertically()
                 {
                     var shipPlacer = new ShipPlacer((x, y) => '1', (x, y) => '6');
 
@@ -175,58 +258,12 @@ namespace ShipPlacer_Tests__
                     board.Armada.First().Squares.Last().Y.Should().Be('9');
                 }
             }
-
         }
+	}
 
-        namespace and_a_ship_is_to_be_placed_on_the_first_column
-        {
-            public class when_placing_a_ship_of_length_four_diagonally_down_and_right
-            {
-                private char _endSelection;
+	namespace given_a_game_board_with_a_ship_already_placed_on_it
+	{
 
-                public when_placing_a_ship_of_length_four_diagonally_down_and_right()
-                {
-                    var shipPlacer = new ShipPlacer((start, finish) => 'a', (start, finish) =>
-                    {
-                        _endSelection = finish;
-                        return '1';
-                    });
-
-                    shipPlacer.PlaceDiagonallyDownAndRightShipOfLength(new GameBoard(), 4);
-                }
-
-                [Fact]
-                public void then_the_last_three_rows_should_not_be_selected()
-                {
-                    _endSelection.Should().Be('6');
-                }
-            }
-
-            namespace and_a_ship_is_to_be_placed_on_the_third_column
-            {
-                public class when_placing_a_ship_of_length_four_diagonally_down_and_right
-                {
-                    private char _endSelection;
-
-                    public when_placing_a_ship_of_length_four_diagonally_down_and_right()
-                    {
-                        var shipPlacer = new ShipPlacer((start, finish) => 'c', (start, finish) =>
-                        {
-                            _endSelection = finish;
-                            return '1';
-                        });
-
-                        shipPlacer.PlaceDiagonallyDownAndRightShipOfLength(new GameBoard(), 4);
-                    }
-
-                    [Fact]
-                    public void then_the_last_three_rows_should_not_be_selected()
-                    {
-                        _endSelection.Should().Be('8');
-                    }
-                }
-            }
-        }
-    }
+	}
 }
 

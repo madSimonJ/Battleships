@@ -42,23 +42,33 @@ namespace BattleShips.BusinessLogic
 
         public GameBoard PlaceDiagonallyDownAndRightShipOfLength(GameBoard oldGameBoard, int shipLength)
         {
-            var randomXCoord = _randomXCoordSelector('a', 'j');
-            var minYCoord = (char) ('9' + (shipLength - 1));
+	        var maxXcoord = (char)('j' - (shipLength - 1));
+            var randomXCoord = _randomXCoordSelector('a', maxXcoord);
             var maxYCoord = (char)('9' - (shipLength - 1));
-            
-            var randomYCoord = _randomYCoordSelector(
-                    minYCoord < '0' ? '0' : minYCoord,
-                    maxYCoord > '9' ? '9' : maxYCoord
-                );
+	        var randomYCoord = _randomYCoordSelector('0', maxYCoord);
 
-            return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+			return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
             {
                 X =(char)(randomXCoord + x),
                 Y = (char)(randomYCoord + x)
             });
         }
 
-        private GameBoard NewGameBoardFromOld(GameBoard oldGameBoard, int shipLength, Func<int, Square> newSquareGenerator) => 
+	    public GameBoard PlaceDiagonallyDownAndLeftShipOfLength(GameBoard oldGameBoard, int shipLength)
+	    {
+		    var minXCoord = (char)('a' + (shipLength - 1));
+		    var randomXCoord = _randomXCoordSelector(minXCoord, 'j');
+		    var maxYCoord = (char)('9' - (shipLength - 1));
+		    var randomYCoord = _randomYCoordSelector('0', maxYCoord);
+
+		    return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+		    {
+			    X = (char)(randomXCoord - x),
+			    Y = (char)(randomYCoord + x)
+		    });
+		}
+
+		private static GameBoard NewGameBoardFromOld(GameBoard oldGameBoard, int shipLength, Func<int, Square> newSquareGenerator) => 
             new GameBoard
             {
                 Armada = new List<Ship>(oldGameBoard?.Armada ?? Enumerable.Empty<Ship>())
@@ -70,6 +80,5 @@ namespace BattleShips.BusinessLogic
                     }
                 }
             };
-
     }
 }
