@@ -7,10 +7,10 @@ namespace BattleShips.BusinessLogic
 {
     public class ShipPlacer
     {
-        private readonly Func<char, char> _randomXCoordSelector;
-        private readonly Func<char, char> _randomYCoordSelector;
+        private readonly Func<char, char, char> _randomXCoordSelector;
+        private readonly Func<char, char, char> _randomYCoordSelector;
 
-        public ShipPlacer(Func<char, char> randomXCoordSelector, Func<char, char> randomYCoordSelector)
+        public ShipPlacer(Func<char, char, char> randomXCoordSelector, Func<char, char, char> randomYCoordSelector)
         {
             _randomXCoordSelector = randomXCoordSelector;
             _randomYCoordSelector = randomYCoordSelector;
@@ -18,8 +18,8 @@ namespace BattleShips.BusinessLogic
 
         public GameBoard PlaceHorizontalShipOfLength(GameBoard oldGameBoard, int shipLength)
         {
-            var randomXCoord = _randomXCoordSelector((char)('9' - (shipLength - 1)));
-            var randomYCoord = _randomYCoordSelector('j');
+            var randomXCoord = _randomXCoordSelector('a', (char)('j' - (shipLength - 1)));
+            var randomYCoord = _randomYCoordSelector('0', '9');
 
             return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
             {
@@ -30,13 +30,31 @@ namespace BattleShips.BusinessLogic
 
         public GameBoard PlaceVerticalShipOfLength(GameBoard oldGameBoard, int shipLength)
         {
-            var randomXCoord = _randomXCoordSelector('9');
-            var randomYCoord = _randomYCoordSelector((char)('j' - (shipLength - 1)));
+            var randomXCoord = _randomXCoordSelector('a', 'j');
+            var randomYCoord = _randomYCoordSelector('0', (char)('9' - (shipLength - 1)));
 
             return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
             {
                 X = randomXCoord,
                 Y = (char) (randomYCoord + x)
+            });
+        }
+
+        public GameBoard PlaceDiagonallyDownAndRightShipOfLength(GameBoard oldGameBoard, int shipLength)
+        {
+            var randomXCoord = _randomXCoordSelector('a', 'j');
+            var minYCoord = (char) ('9' + (shipLength - 1));
+            var maxYCoord = (char)('9' - (shipLength - 1));
+            
+            var randomYCoord = _randomYCoordSelector(
+                    minYCoord < '0' ? '0' : minYCoord,
+                    maxYCoord < '0' ? '0' : minYCoord
+                );
+
+            return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+            {
+                X =(char)(randomXCoord + x),
+                Y = (char)(randomYCoord + x)
             });
         }
 
@@ -52,5 +70,6 @@ namespace BattleShips.BusinessLogic
                     }
                 }
             };
+
     }
 }
