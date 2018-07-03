@@ -48,7 +48,7 @@ namespace BattleShips.BusinessLogic
             
             var randomYCoord = _randomYCoordSelector(
                     minYCoord < '0' ? '0' : minYCoord,
-                    maxYCoord < '0' ? '0' : minYCoord
+                    maxYCoord > '9' ? '9' : maxYCoord
                 );
 
             return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
