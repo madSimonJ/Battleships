@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Battleships.Domain;
 using BattleShips.BusinessLogic;
 using FluentAssertions;
@@ -263,7 +264,55 @@ namespace ShipPlacer_Tests__
 
 	namespace given_a_game_board_with_a_ship_already_placed_on_it
 	{
+		public class when_attempting_to_place_a_ship_on_the_same_location
+		{
+			private readonly GameBoard board;
+			int _xCallCount = 0;
+			int _yCallCount = 0;
 
+			public when_attempting_to_place_a_ship_on_the_same_location()
+			{
+				var shipPlacer = new ShipPlacer((x, y) =>
+				{
+					_xCallCount++;
+					switch (_xCallCount)
+					{
+						case 1:
+							return 'b';
+						case 2:
+							return 'd';
+						case 3:
+							return 'g';
+						default:
+							throw new Exception();
+					}
+				}, (x, y) =>
+				{
+					_yCallCount++;
+					switch (_yCallCount)
+					{
+						case 1:
+							return '2';
+						case 2:
+							return '1';
+						case 3:
+							return '0';
+						default:
+							throw new Exception();
+					}
+				});
+
+				board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
+				board = shipPlacer.PlaceVerticalShipOfLength(board, 4);
+			}
+
+			[Fact]
+			public void then_a_new_location_for_the_second_ship_should_be_requested()
+			{
+				_xCallCount.Should().Be(3);
+				_yCallCount.Should().Be(3);
+			}
+		}
 	}
 }
 

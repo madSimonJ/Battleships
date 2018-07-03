@@ -33,6 +33,8 @@ namespace BattleShips.BusinessLogic
             var randomXCoord = _randomXCoordSelector('a', 'j');
             var randomYCoord = _randomYCoordSelector('0', (char)('9' - (shipLength - 1)));
 
+
+
             return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
             {
                 X = randomXCoord,
