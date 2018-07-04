@@ -14,7 +14,18 @@ namespace ShipPlacer_Tests__
             private readonly GameBoard board;
             public when_placing_a_ship_of_length_four_horizontally()
             {
-                var shipPlacer = new ShipPlacer((x, y) => 'a', (x, y) => '1');
+                var shipPlacer = new ShipPlacer((min, max) =>
+                {
+                    switch (min)
+                    {
+                        case 'a':
+                            return 'a';
+                        case '0':
+                            return '1';
+                        default:
+                            throw new Exception();
+                    }
+                });
 
                 board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
             }

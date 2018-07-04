@@ -7,80 +7,114 @@ namespace BattleShips.BusinessLogic
 {
     public class ShipPlacer
     {
-        private readonly Func<char, char, char> _randomXCoordSelector;
-        private readonly Func<char, char, char> _randomYCoordSelector;
+        private readonly Func<char, char, char> _randomCoordSelector;
 
-        public ShipPlacer(Func<char, char, char> randomXCoordSelector, Func<char, char, char> randomYCoordSelector)
+        public ShipPlacer(Func<char, char, char> randomCoordSelector)
         {
-            _randomXCoordSelector = randomXCoordSelector;
-            _randomYCoordSelector = randomYCoordSelector;
+            _randomCoordSelector = randomCoordSelector;
         }
 
         public GameBoard PlaceHorizontalShipOfLength(GameBoard oldGameBoard, int shipLength)
         {
-            var randomXCoord = _randomXCoordSelector('a', (char)('j' - (shipLength - 1)));
-            var randomYCoord = _randomYCoordSelector('0', '9');
-
-            return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+            return NewGameBoardFromOld(
+                oldGameBoard, 
+                shipLength, 
+                () => (
+                    _randomCoordSelector('a', (char)('j' - (shipLength - 1))),
+                    _randomCoordSelector('0', '9')
+                    )
+                ,
+                (newX, newY, x) => new Square
             {
-                X = (char) (randomXCoord + x),
-                Y = randomYCoord
+                X = (char) (newX + x),
+                Y = newY
             });
         }
 
         public GameBoard PlaceVerticalShipOfLength(GameBoard oldGameBoard, int shipLength)
         {
-            var randomXCoord = _randomXCoordSelector('a', 'j');
-            var randomYCoord = _randomYCoordSelector('0', (char)('9' - (shipLength - 1)));
-
-
-
-            return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+            return NewGameBoardFromOld(
+                oldGameBoard, 
+                shipLength, 
+                () => (
+                    _randomCoordSelector('a', 'j'),
+                    _randomCoordSelector('0', (char)('9' - (shipLength - 1)))
+                    ),
+                (newX, newY, x) => new Square
             {
-                X = randomXCoord,
-                Y = (char) (randomYCoord + x)
+                X = newX,
+                Y = (char) (newY+ x)
             });
         }
 
         public GameBoard PlaceDiagonallyDownAndRightShipOfLength(GameBoard oldGameBoard, int shipLength)
         {
 	        var maxXcoord = (char)('j' - (shipLength - 1));
-            var randomXCoord = _randomXCoordSelector('a', maxXcoord);
             var maxYCoord = (char)('9' - (shipLength - 1));
-	        var randomYCoord = _randomYCoordSelector('0', maxYCoord);
 
-			return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+			return NewGameBoardFromOld(
+			    oldGameBoard, 
+			    shipLength,
+			    () =>
+                    (
+                        _randomCoordSelector('a', maxXcoord),
+                        _randomCoordSelector('0', maxYCoord)
+                        ),
+			    (newX, newY, x) => new Square
             {
-                X =(char)(randomXCoord + x),
-                Y = (char)(randomYCoord + x)
+                X =(char)(newX + x),
+                Y = (char)(newY + x)
             });
         }
 
 	    public GameBoard PlaceDiagonallyDownAndLeftShipOfLength(GameBoard oldGameBoard, int shipLength)
 	    {
 		    var minXCoord = (char)('a' + (shipLength - 1));
-		    var randomXCoord = _randomXCoordSelector(minXCoord, 'j');
 		    var maxYCoord = (char)('9' - (shipLength - 1));
-		    var randomYCoord = _randomYCoordSelector('0', maxYCoord);
 
-		    return NewGameBoardFromOld(oldGameBoard, shipLength, x => new Square
+		    return NewGameBoardFromOld(
+		        oldGameBoard, 
+		        shipLength, 
+		        () => (
+		            _randomCoordSelector(minXCoord, 'j'),
+		            _randomCoordSelector('0', maxYCoord)
+                    ),
+		        (newX, newY, x) => new Square
 		    {
-			    X = (char)(randomXCoord - x),
-			    Y = (char)(randomYCoord + x)
+			    X = (char)(newX- x),
+			    Y = (char)(newY+ x)
 		    });
 		}
 
-		private static GameBoard NewGameBoardFromOld(GameBoard oldGameBoard, int shipLength, Func<int, Square> newSquareGenerator) => 
-            new GameBoard
+        private static GameBoard NewGameBoardFromOld(GameBoard oldGameBoard, int shipLength, Func<(char, char)> newCoordGenerator, Func<char, char, int, Square> newSquareGenerator)
+        {
+            Square[] newSquares()
+            {
+                (char, char) newCoords = newCoordGenerator();
+                return Enumerable.Range(0, shipLength).Select(x => newSquareGenerator(newCoords.Item1, newCoords.Item2, x)).ToArray();
+            }
+
+            var allSquares = oldGameBoard.Armada?.Any() ?? false
+                ? oldGameBoard.Armada.SelectMany(x => x.Squares).ToArray()
+                : new Square[0];
+
+            var newSq = newSquares();
+
+            while (allSquares.Any(x=> newSq.Any(y => x.X == y.X && x.Y == y.Y)))
+            {
+                newSq = newSquares();
+            }
+
+            return new GameBoard
             {
                 Armada = new List<Ship>(oldGameBoard?.Armada ?? Enumerable.Empty<Ship>())
                 {
                     new Ship
                     {
-                        Squares =
-                            Enumerable.Range(0, shipLength).Select(newSquareGenerator)
+                        Squares = newSq
                     }
                 }
             };
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Battleships.Domain;
+using BattleShips.BusinessLogic;
 
 namespace BattleShips.ConsoleApp
 {
@@ -13,13 +14,15 @@ namespace BattleShips.ConsoleApp
 			GameBoard playersGameBoard;
 	        GameBoard computersGameBoard;
 	        var userInput = ' ';
+            var random = new Random();
+            var placer = new ShipPlacer((min, max) => (char)random.Next(min, max));
 	        while (state.state != MenuState.Quit)
 	        {
 		        switch (state.state)
 		        {
 					case MenuState.NewGame:
-						playersGameBoard = GameFactory.NewBoard();
-						computersGameBoard = GameFactory.NewBoard();
+						playersGameBoard = GameFactory.NewBoard(placer);
+						computersGameBoard = GameFactory.NewBoard(placer);
 						break;
 					default:
 						state = Menu.GetMenuText(state.state, userInput);

@@ -1,4 +1,6 @@
-﻿using Battleships.Domain;
+﻿using System;
+using Battleships.Domain;
+using BattleShips.BusinessLogic;
 using FluentAssertions;
 using Xunit;
 
@@ -11,7 +13,7 @@ namespace GameTests__
 			private readonly GameBoard gameBoard;
 			public when_setting_up_the_board()
 			{
-				gameBoard = GameFactory.NewBoard();
+				gameBoard = GameFactory.NewBoard(new ShipPlacer((min, max) => (char)new Random().Next(min, max)));
 			}
 
 			[Fact]
