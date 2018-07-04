@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Battleships.Domain;
+using Battleships.Tests;
 using BattleShips.BusinessLogic;
 using FluentAssertions;
 using Xunit;
@@ -14,18 +15,8 @@ namespace ShipPlacer_Tests__
             private readonly GameBoard board;
             public when_placing_a_ship_of_length_four_horizontally()
             {
-                var shipPlacer = new ShipPlacer((min, max) =>
-                {
-                    switch (min)
-                    {
-                        case 'a':
-                            return 'a';
-                        case '0':
-                            return '1';
-                        default:
-                            throw new Exception();
-                    }
-                });
+	            var mockCoordsPlacer = new MockCoordGenerator(new[] {'a'}, new[] {'1'});
+                var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
                 board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
             }
@@ -72,9 +63,10 @@ namespace ShipPlacer_Tests__
             private readonly GameBoard board;
             public when_placing_a_ship_of_length_four_vertically()
             {
-                var shipPlacer = new ShipPlacer((x, y) => 'a', (x, y) => '1');
+	            var mockCoordsPlacer = new MockCoordGenerator(new[] { 'a' }, new[] { '1' });
+	            var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-                board = shipPlacer.PlaceVerticalShipOfLength(new GameBoard(), 4);
+				board = shipPlacer.PlaceVerticalShipOfLength(new GameBoard(), 4);
             }
 
             [Fact]
@@ -117,21 +109,13 @@ namespace ShipPlacer_Tests__
         public class when_placing_a_ship_of_length_four_diagonally_down_and_right
         {
             private readonly GameBoard board;
-	        private char maxXCoord;
-	        private char maxYCoord;
-            public when_placing_a_ship_of_length_four_diagonally_down_and_right()
+	        private readonly MockCoordGenerator mockCoordsPlacer;
+			public when_placing_a_ship_of_length_four_diagonally_down_and_right()
             {
-                var shipPlacer = new ShipPlacer((min, max) =>
-                {
-	                maxXCoord = max;
-	                return 'a';
-                }, (min, max) =>
-                {
-	                maxYCoord = max;
-	                return '1';
-                });
+	            mockCoordsPlacer = new MockCoordGenerator(new[] { 'a' }, new[] { '1' });
+	            var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-                board = shipPlacer.PlaceDiagonallyDownAndRightShipOfLength(new GameBoard(), 4);
+				board = shipPlacer.PlaceDiagonallyDownAndRightShipOfLength(new GameBoard(), 4);
             }
 
             [Fact]
@@ -161,13 +145,13 @@ namespace ShipPlacer_Tests__
 	        [Fact]
 	        public void then_the_last_three_columns_should_not_be_selected()
 	        {
-		        maxXCoord.Should().Be('g');
+		        mockCoordsPlacer.MinMaxParams.Single(Helper.IsXCoord).max.Should().Be('g');
 	        }
 
 	        [Fact]
 	        public void then_the_last_three_Rows_should_not_be_selected()
 	        {
-		        maxYCoord.Should().Be('6');
+		        mockCoordsPlacer.MinMaxParams.Single(Helper.IsYCoord).max.Should().Be('6');
 	        }
 
 
@@ -178,17 +162,11 @@ namespace ShipPlacer_Tests__
 			private readonly GameBoard board;
 			private char minXCoord;
 			private char maxYCoord;
+			private MockCoordGenerator mockCoordsPlacer;
 			public when_placing_a_ship_of_length_four_diagonally_down_and_left()
 			{
-				var shipPlacer = new ShipPlacer((min, max) =>
-				{
-					minXCoord = min;
-					return 'j';
-				}, (min, max) =>
-				{
-					maxYCoord = max;
-					return '1';
-				});
+				mockCoordsPlacer = new MockCoordGenerator(new[] { 'j' }, new[] { '1' });
+				var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
 				board = shipPlacer.PlaceDiagonallyDownAndLeftShipOfLength(new GameBoard(), 4);
 			}
@@ -220,13 +198,13 @@ namespace ShipPlacer_Tests__
 			[Fact]
 			public void then_the_first_three_columns_should_not_be_selected()
 			{
-				minXCoord.Should().Be('d');
+				mockCoordsPlacer.MinMaxParams.Single(Helper.IsXCoord).min.Should().Be('d');
 			}
 
 			[Fact]
 			public void then_the_last_three_Rows_should_not_be_selected()
 			{
-				maxYCoord.Should().Be('6');
+				mockCoordsPlacer.MinMaxParams.Single(Helper.IsYCoord).max.Should().Be('6');
 			}
 
 
@@ -239,9 +217,10 @@ namespace ShipPlacer_Tests__
                 private readonly GameBoard board;
                 public when_placing_a_ship_horizontally()
                 {
-                    var shipPlacer = new ShipPlacer((x, y) => 'g', (x, y) => '1');
+	                var mockCoordsPlacer = new MockCoordGenerator(new[] { 'g' }, new[] { '1' });
+	                var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-                    board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
+					board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
                 }
 
                 [Fact]
@@ -259,9 +238,10 @@ namespace ShipPlacer_Tests__
                 private readonly GameBoard board;
                 public when_placing_a_ship_vertically()
                 {
-                    var shipPlacer = new ShipPlacer((x, y) => '1', (x, y) => '6');
+	                var mockCoordsPlacer = new MockCoordGenerator(new[] { 'g' }, new[] { '6' });
+	                var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-                    board = shipPlacer.PlaceVerticalShipOfLength(new GameBoard(), 4);
+					board = shipPlacer.PlaceVerticalShipOfLength(new GameBoard(), 4);
                 }
 
                 [Fact]
@@ -278,40 +258,11 @@ namespace ShipPlacer_Tests__
 		public class when_attempting_to_place_a_ship_on_the_same_location
 		{
 			private readonly GameBoard board;
-			int _xCallCount = 0;
-			int _yCallCount = 0;
-
+			private readonly MockCoordGenerator mockCoordGenerator;
 			public when_attempting_to_place_a_ship_on_the_same_location()
 			{
-				var shipPlacer = new ShipPlacer((x, y) =>
-				{
-					_xCallCount++;
-					switch (_xCallCount)
-					{
-						case 1:
-							return 'b';
-						case 2:
-							return 'd';
-						case 3:
-							return 'g';
-						default:
-							throw new Exception();
-					}
-				}, (x, y) =>
-				{
-					_yCallCount++;
-					switch (_yCallCount)
-					{
-						case 1:
-							return '2';
-						case 2:
-							return '1';
-						case 3:
-							return '0';
-						default:
-							throw new Exception();
-					}
-				});
+				mockCoordGenerator = new MockCoordGenerator(new[] { 'b', 'd', 'g' }, new[] { '2', '1', '0' });
+				var shipPlacer = new ShipPlacer(mockCoordGenerator.GenerateCoords);
 
 				board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
 				board = shipPlacer.PlaceVerticalShipOfLength(board, 4);
@@ -320,8 +271,8 @@ namespace ShipPlacer_Tests__
 			[Fact]
 			public void then_a_new_location_for_the_second_ship_should_be_requested()
 			{
-				_xCallCount.Should().Be(3);
-				_yCallCount.Should().Be(3);
+				mockCoordGenerator.XCoordCount.Should().Be(3);
+				mockCoordGenerator.YCoordCount.Should().Be(3);
 			}
 		}
 	}
