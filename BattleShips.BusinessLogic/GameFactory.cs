@@ -19,7 +19,7 @@ namespace BattleShips.BusinessLogic
 				case 0:
 					return ShipDirection.Horizontal;
 				case 1:
-					return ShipDirection.Vertical;,
+					return ShipDirection.Vertical;
 				case 2:
 					return ShipDirection.DiagonallyDownAndLeft;
 				case 3:

@@ -160,8 +160,6 @@ namespace ShipPlacer_Tests__
 		public class when_placing_a_ship_of_length_four_diagonally_down_and_left
 		{
 			private readonly GameBoard board;
-			private char minXCoord;
-			private char maxYCoord;
 			private readonly MockCoordGenerator _mockCoordsPlacer;
 			public when_placing_a_ship_of_length_four_diagonally_down_and_left()
 			{
