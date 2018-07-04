@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Battleships.Domain;
 using BattleShips.BusinessLogic;
 using FluentAssertions;
@@ -20,6 +21,19 @@ namespace GameTests__
 			public void then_the_board_should_have_an_armada()
 			{
 				gameBoard.Armada.Should().HaveCount(3);
+			}
+
+			[Fact]
+			public void then_the_board_should_have_two_ships_length_4_and_1_ship_length_3()
+			{
+				gameBoard.Armada.Where(x => x.Squares.Count() == 4).Should().HaveCount(2);
+				gameBoard.Armada.Where(x => x.Squares.Count() == 3).Should().HaveCount(1);
+			}
+
+			[Fact]
+			public void then_no_two_ships_should_be_on_the_same_square()
+			{
+				gameBoard.Armada.SelectMany(x => x.Squares).Should().OnlyHaveUniqueItems();
 			}
 		}
 	}

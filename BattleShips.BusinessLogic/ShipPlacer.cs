@@ -12,7 +12,21 @@ namespace BattleShips.BusinessLogic
         public ShipPlacer(Func<char, char, char> randomCoordSelector)
         {
             _randomCoordSelector = randomCoordSelector;
+
+			_directionSelection = new Dictionary<ShipDirection, Func<GameBoard, int, GameBoard>>
+			{
+				{ ShipDirection.Horizontal,PlaceHorizontalShipOfLength },
+				{ ShipDirection.Vertical,PlaceVerticalShipOfLength },
+				{ ShipDirection.DiagonallyDownAndLeft,PlaceDiagonallyDownAndLeftShipOfLength },
+				{ ShipDirection.DiagonallyDownAndRight,PlaceDiagonallyDownAndRightShipOfLength }
+			};
         }
+
+	    private readonly Dictionary<ShipDirection, Func<GameBoard, int, GameBoard>> _directionSelection;
+
+	    public GameBoard PlaceShipOfLength(GameBoard oldGameBoard, int shipLength, Func<ShipDirection> directionChooser) 
+		    =>_directionSelection[directionChooser()](oldGameBoard, shipLength);
+			
 
         public GameBoard PlaceHorizontalShipOfLength(GameBoard oldGameBoard, int shipLength)
         {

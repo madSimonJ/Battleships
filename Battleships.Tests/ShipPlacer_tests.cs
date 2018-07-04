@@ -18,7 +18,7 @@ namespace ShipPlacer_Tests__
 	            var mockCoordsPlacer = new MockCoordGenerator(new[] {'a'}, new[] {'1'});
                 var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-                board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
+                board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.Horizontal);
             }
 
             [Fact]
@@ -66,7 +66,7 @@ namespace ShipPlacer_Tests__
 	            var mockCoordsPlacer = new MockCoordGenerator(new[] { 'a' }, new[] { '1' });
 	            var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-				board = shipPlacer.PlaceVerticalShipOfLength(new GameBoard(), 4);
+				board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.Vertical);
             }
 
             [Fact]
@@ -115,7 +115,7 @@ namespace ShipPlacer_Tests__
 	            mockCoordsPlacer = new MockCoordGenerator(new[] { 'a' }, new[] { '1' });
 	            var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-				board = shipPlacer.PlaceDiagonallyDownAndRightShipOfLength(new GameBoard(), 4);
+				board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.DiagonallyDownAndRight);
             }
 
             [Fact]
@@ -162,13 +162,13 @@ namespace ShipPlacer_Tests__
 			private readonly GameBoard board;
 			private char minXCoord;
 			private char maxYCoord;
-			private MockCoordGenerator mockCoordsPlacer;
+			private readonly MockCoordGenerator _mockCoordsPlacer;
 			public when_placing_a_ship_of_length_four_diagonally_down_and_left()
 			{
-				mockCoordsPlacer = new MockCoordGenerator(new[] { 'j' }, new[] { '1' });
-				var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
+				_mockCoordsPlacer = new MockCoordGenerator(new[] { 'j' }, new[] { '1' });
+				var shipPlacer = new ShipPlacer(_mockCoordsPlacer.GenerateCoords);
 
-				board = shipPlacer.PlaceDiagonallyDownAndLeftShipOfLength(new GameBoard(), 4);
+				board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.DiagonallyDownAndLeft);
 			}
 
 			[Fact]
@@ -198,13 +198,13 @@ namespace ShipPlacer_Tests__
 			[Fact]
 			public void then_the_first_three_columns_should_not_be_selected()
 			{
-				mockCoordsPlacer.MinMaxParams.Single(Helper.IsXCoord).min.Should().Be('d');
+				_mockCoordsPlacer.MinMaxParams.Single(Helper.IsXCoord).min.Should().Be('d');
 			}
 
 			[Fact]
 			public void then_the_last_three_Rows_should_not_be_selected()
 			{
-				mockCoordsPlacer.MinMaxParams.Single(Helper.IsYCoord).max.Should().Be('6');
+				_mockCoordsPlacer.MinMaxParams.Single(Helper.IsYCoord).max.Should().Be('6');
 			}
 
 
@@ -220,7 +220,7 @@ namespace ShipPlacer_Tests__
 	                var mockCoordsPlacer = new MockCoordGenerator(new[] { 'g' }, new[] { '1' });
 	                var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-					board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
+					board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.Horizontal);
                 }
 
                 [Fact]
@@ -241,7 +241,7 @@ namespace ShipPlacer_Tests__
 	                var mockCoordsPlacer = new MockCoordGenerator(new[] { 'g' }, new[] { '6' });
 	                var shipPlacer = new ShipPlacer(mockCoordsPlacer.GenerateCoords);
 
-					board = shipPlacer.PlaceVerticalShipOfLength(new GameBoard(), 4);
+					board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.Vertical);
                 }
 
                 [Fact]
@@ -259,13 +259,14 @@ namespace ShipPlacer_Tests__
 		{
 			private readonly GameBoard board;
 			private readonly MockCoordGenerator mockCoordGenerator;
+
 			public when_attempting_to_place_a_ship_on_the_same_location()
 			{
-				mockCoordGenerator = new MockCoordGenerator(new[] { 'b', 'd', 'g' }, new[] { '2', '1', '0' });
+				mockCoordGenerator = new MockCoordGenerator(new[] {'b', 'd', 'g'}, new[] {'2', '1', '0'});
 				var shipPlacer = new ShipPlacer(mockCoordGenerator.GenerateCoords);
 
-				board = shipPlacer.PlaceHorizontalShipOfLength(new GameBoard(), 4);
-				board = shipPlacer.PlaceVerticalShipOfLength(board, 4);
+				board = shipPlacer.PlaceShipOfLength(new GameBoard(), 4, () => ShipDirection.Horizontal);
+				board = shipPlacer.PlaceShipOfLength(board, 4, () => ShipDirection.Vertical);
 			}
 
 			[Fact]
