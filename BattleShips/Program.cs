@@ -21,8 +21,8 @@ namespace BattleShips.ConsoleApp
 		        switch (state.state)
 		        {
 					case MenuState.NewGame:
-						playersGameBoard = GameFactory.NewBoard(placer, (min, max) => 0);
-						computersGameBoard = GameFactory.NewBoard(placer, (min, max) => 0);
+						playersGameBoard = GameFactory.NewBoard(placer, random.Next);
+						computersGameBoard = GameFactory.NewBoard(placer, random.Next);
 						break;
 					default:
 						state = Menu.GetMenuText(state.state, userInput);
