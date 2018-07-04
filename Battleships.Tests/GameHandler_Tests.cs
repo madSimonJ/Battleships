@@ -13,6 +13,7 @@ namespace GameHandler_Tests__
 		public class when_the_player_takes_a_turn_that_will_hit
 		{
 			private readonly GameHandler gameHandler;
+			private readonly GameTurnStatus gameTurnStatus;
 
 			public when_the_player_takes_a_turn_that_will_hit()
 			{
@@ -28,7 +29,7 @@ namespace GameHandler_Tests__
 						GameFactory.NewBoard(placer, (min, max) => 1)
 					);
 
-				gameHandler.TakeTurn('a', '1');
+				gameTurnStatus = gameHandler.TakeTurn('a', '1');
 			}
 
 			[Fact]
@@ -46,6 +47,12 @@ namespace GameHandler_Tests__
 					.Where(x => x.X != 'a' && x.Y != '1')
 					.All(x => x.Status == SquareStatus.NotHit)
 					.Should().BeTrue();
+			}
+
+			[Fact]
+			public void then_a_status_message_should_be_returned()
+			{
+				gameTurnStatus.Should().NotBeNull();
 			}
 		}
 	}

@@ -16,7 +16,7 @@ namespace BattleShips.ConsoleApp
 			ComputersBoard = computersBoard;
 		}
 
-		public void TakeTurn(char x, char y)
+		public GameTurnStatus TakeTurn(char x, char y)
 		{
 			var hitSquare = ComputersBoard.Armada.SelectMany(ship => ship.Squares).SingleOrDefault(sqr => sqr.X == x && sqr.Y == y);
 			if (hitSquare != null)
