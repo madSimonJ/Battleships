@@ -26,7 +26,11 @@ namespace GameHandler_Tests__
 
 				gameHandler = new GameHandler(
 						GameFactory.NewBoard(placer, (min, max) => 1),
-						GameFactory.NewBoard(placer, (min, max) => 1)
+						GameFactory.NewBoard(placer, (min, max) => 1),
+                        new MockCoordGenerator(
+                                new [] {'d'},
+                                new [] {'4'}
+                            ).GenerateCoords
 					);
 
 				gameTurnStatus = gameHandler.TakeTurn('a', '1');
@@ -54,6 +58,24 @@ namespace GameHandler_Tests__
 			{
 				gameTurnStatus.Should().NotBeNull();
 			}
+
+		    [Fact]
+		    public void then_the_status_message_should_report_that_the_player_hit_a_target()
+		    {
+		        gameTurnStatus.PlayerHit.Should().BeTrue();
+		    }
+
+		    [Fact]
+		    public void then_the_satus_message_should_report_the_square_hit_by_the_computer()
+		    {
+		        gameTurnStatus.ComputerPlayerShot.Should().Be(('d', '4'));
+		    }
+
+		    [Fact]
+		    public void then_the_status_message_should_report_that_the_player_has_not_been_hit()
+		    {
+		        gameTurnStatus.IsPlayerHit.Should().BeTrue();
+		    }
 		}
 	}
 }

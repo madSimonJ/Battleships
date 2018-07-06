@@ -7,12 +7,14 @@ namespace BattleShips.ConsoleApp
 {
 	public class GameHandler
 	{
-		public GameBoard PlayersBoard { get; private set; }
+	    private readonly Func<char, char, char> _coordGenerator;
+	    public GameBoard PlayersBoard { get; private set; }
 		public GameBoard ComputersBoard { get; private set; }
 
-		public GameHandler(GameBoard playersBoard, GameBoard computersBoard)
+		public GameHandler(GameBoard playersBoard, GameBoard computersBoard, Func<char, char, char> coordGenerator)
 		{
-			PlayersBoard = playersBoard;
+		    _coordGenerator = coordGenerator;
+		    PlayersBoard = playersBoard;
 			ComputersBoard = computersBoard;
 		}
 
@@ -22,21 +24,15 @@ namespace BattleShips.ConsoleApp
 			if (hitSquare != null)
 				hitSquare.Status = SquareStatus.Hit;
 
-			//if (!ComputersBoard.Armada.SelectMany(ship => ship.Squares).Any(sqr => sqr.X == x && sqr.Y == y)) return;
-
-			//var shipsNotHit = ComputersBoard.Armada.Where(ship => !ship.Squares.Any(sqr => sqr.X == x && sqr.Y == y));
-			//var newComputerArmada = new List<Ship>();
-			//newComputerArmada.AddRange(shipsNotHit);
-
-			//var shipHit = ComputersBoard.Armada.Single(ship => ship.Squares.Any(sqr => sqr.X == x && sqr.Y == y));
-			//shipHit.Squares.Single(sqr => sqr.X == x && sqr.Y == y).Status = SquareStatus.Hit;
-
-			//newComputerArmada.Add(shipHit);
-
-			//ComputersBoard = new GameBoard
-			//{
-			//	Armada = newComputerArmada
-			//};
+		    var computerHit = (
+		            _coordGenerator('a', 'j'),
+                    _coordGenerator('0', '9')
+		        );
+            return new GameTurnStatus
+            {
+                PlayerHit = hitSquare != null,
+                ComputerPlayerShot = computerHit
+            };
 		}
 	}
 }
